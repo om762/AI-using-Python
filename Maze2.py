@@ -66,7 +66,6 @@ class Maze():
                         row.append(False)
                     elif contents[i][j] == "B":
                         self.goal = (i, j)
-                        row.append(False)
                     elif contents[i][j] == " ":
                         row.append(False)
                     else:
@@ -77,7 +76,7 @@ class Maze():
             self.walls.append(row)
 
         self.Solution = None
-        self.explored = {}  # Initialize explored set
+        self.explored = set()  # Initialize explored set
 
     def print(self):
         Solution = self.Solution[1] if self.Solution is not None else None
@@ -101,7 +100,7 @@ class Maze():
     def neighbors(self, state):
         row, col = state
 
-        # All Possible Action
+        # All Possible Actions
         candidates = [
             ("up", (row - 1, col)),
             ("down", (row + 1, col)),
@@ -109,7 +108,7 @@ class Maze():
             ("right", (row, col + 1)),
         ]
 
-        # Ensure that action are valid
+        # Ensure that actions are valid
         result = []
         for action, (r, c) in candidates:
             try:
@@ -121,36 +120,36 @@ class Maze():
 
     # The main Focus
     def Solve(self):
-        """/find the solution if one exist in maze"""
+        """Find the solution if one exists in the maze"""
 
-        # Keep Track the number of step explored
+        # Keep Track the number of steps explored
         self.num_expl = 0
 
-        # initialize the front to the start position
+        # Initialize the front to the start position
         start = Node(state=self.start, parent=None, action=None)
         frontier = StackFrontier()
         frontier.add(start)
 
-        # initialize an explored set
+        # Initialize an explored set
         self.explored = set()
 
-        # keep looping until solution found
+        # Keep looping until a solution is found
         while True:
 
-            # if nothing left in frontier then there is no solution
+            # If nothing left in frontier, then there is no solution
             if frontier.empty():
                 raise Exception("NO SOLUTION")
 
-            # choose a node from frontier
+            # Choose a node from the frontier
             node = frontier.remove()
             self.num_expl += 1  # Increment the number of explored nodes
 
-            # Check Whether it's a goal
+            # Check whether it's a goal
             if node.state == self.goal:
                 action = []
                 cells = []
 
-                # Follow parent node to find the solution
+                # Follow parent nodes to find the solution
                 while node.parent is not None:
                     action.append(node.action)
                     cells.append(node.state)
@@ -165,7 +164,7 @@ class Maze():
             # Mark the node as explored
             self.explored.add(node.state)
 
-            # Add Neighbors to frontier 
+            # Add neighbors to frontier
             for action, state in self.neighbors(node.state):
                 if not frontier.contain_state(state) and state not in self.explored:
                     child = Node(state=state, parent=node, action=action)
@@ -178,7 +177,7 @@ class Maze():
         # Create a blank canvas
         img = Image.new(
             "RGBA",
-            (self.width * cell_size, self.height * cell_border),
+            (self.width * cell_size, self.height * cell_size),
             "black"
         )
 
@@ -200,8 +199,7 @@ class Maze():
                     fill = (237, 240, 252)
 
                 draw.rectangle(
-                    ([(j * cell_size, i * cell_size),
-                      ((j + 1) * cell_size, (i + 1) * cell_size)]),
+                    (j * cell_size, i * cell_size, (j + 1) * cell_size, (i + 1) * cell_size),
                     fill=fill
                 )
         img.save(filename)
@@ -215,7 +213,7 @@ print("MAZE:")
 m.print()
 print("Solving")
 m.Solve()
-print("State Explored : ", m.num_expl)
+print("State Explored:", m.num_expl)
 print("Solution:")
 m.print()
 m.output_image("maze.png", show_solution=True)
