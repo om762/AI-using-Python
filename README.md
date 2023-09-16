@@ -14,7 +14,7 @@ It it simple project for solving Maze Problem.
 
 Clone the project
 
-```cmd
+```bash
   git clone https://github.com/om762/AI-using-Python
 ```
 
