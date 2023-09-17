@@ -86,7 +86,7 @@ class Maze():
         for i, row in enumerate(self.walls):
             for j, col in enumerate(row):
                 if col:
-                    print("‖", end="")
+                    print("█", end="")
                 elif (i, j) == self.start:
                     print("A", end="")
                 elif (i, j) == self.goal:
@@ -178,54 +178,52 @@ class Maze():
                     child = Node(state=state, parent=node, action=action)
                     frontier.add(child)
 
-    def output_image(self, filename, show_solution=True):
+    def output_image(self, filename, show_solution=True, show_explored=False):
         cell_size = 50
         cell_border = 2
-        cube_size = 10  # Size of the cubes for walls, explored points, and path to B
 
         # Create a blank canvas
         img = Image.new(
-            "RGB",
+            "RGBA",
             (self.width * cell_size, self.height * cell_size),
             "black"
         )
-
         draw = ImageDraw.Draw(img)
-        solution = self.Solution[1] if self.Solution is not None else None
-        path_to_b = solution[1:-1] if solution is not None else []  # Exclude start and goal from the path
 
+        solution = self.Solution[1] if self.Solution is not None else None
         for i, row in enumerate(self.walls):
             for j, col in enumerate(row):
-                x0, y0 = j * cell_size, i * cell_size
-                x1, y1 = (j + 1) * cell_size, (i + 1) * cell_size
 
-                # Draw cell border in black
-                draw.rectangle([(x0, y0), (x1, y1)], outline=(0, 0, 0), width=cell_border)
-
+                # Walls
                 if col:
-                    # Wall (cube)
-                    fill = (139, 69, 19)  # Brown
-                    draw.rectangle([(x0, y0), (x1, y1)], fill=fill)
+                    fill = (40, 40, 40)
 
+                # Start
                 elif (i, j) == self.start:
-                    # Location of A (cube)
-                    fill = (255, 165, 0)  # Orange
-                    draw.rectangle([(x0, y0), (x1, y1)], fill=fill)
+                    fill = (255, 0, 0)
 
+                # Goal
                 elif (i, j) == self.goal:
-                    # Location of B (cube)
-                    fill = (255, 182, 193)  # Pink
-                    draw.rectangle([(x0, y0), (x1, y1)], fill=fill)
+                    fill = (0, 171, 28)
 
-                elif (i, j) in path_to_b:
-                    # Cells on the main path to B (cube)
-                    fill = (0, 128, 0)  # Green
-                    draw.rectangle([(x0, y0), (x1, y1)], fill=fill)
+                # Solution
+                elif solution is not None and show_solution and (i, j) in solution:
+                    fill = (220, 235, 113)
 
-                elif (i, j) in self.explored:
-                    # Explored point (asterisk *)
-                    fill = (255, 0, 0)  # Red
-                    draw.text((x0 + cell_size // 2, y0 + cell_size // 2), "*", fill=fill)
+                # Explored
+                elif solution is not None and show_explored and (i, j) in self.explored:
+                    fill = (212, 97, 85)
+
+                # Empty cell
+                else:
+                    fill = (237, 240, 252)
+
+                # Draw cell
+                draw.rectangle(
+                    ([(j * cell_size + cell_border, i * cell_size + cell_border),
+                      ((j + 1) * cell_size - cell_border, (i + 1) * cell_size - cell_border)]),
+                    fill=fill
+                )
         image_name = input("Enter a name for image : ")
         img.save(image_name + '.png')
 
@@ -242,4 +240,5 @@ m.Solve()
 print("State Explored : ", m.num_expl)
 print("Solution:")
 m.print()
-m.output_image("maze.png", show_solution=True)
+explored = int(input("Enter 1 to show explores path else 0 : "))
+m.output_image("maze.png", show_solution=True, show_explored= bool(explored))

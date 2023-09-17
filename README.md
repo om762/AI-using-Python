@@ -1,16 +1,24 @@
 
-# Maze Problem (Search)
+# AI using Python
 
-It it simple project for solving Maze Problem.
+
+A this colloection of the all the projects I made while learning the AI. This will include the several projects based multiple topics.
 
 
 
 ## Authors
 
-- [om762](https://github.com/om762)
+- [@om762](https://www.github.com/om762)
+
+
+## Features
+
+- Simple projects with elaborative comments
+- Exclusive Demonstration
+- All concept completed
+
 
 ## Run Locally
-
 
 Clone the project
 
@@ -20,19 +28,17 @@ Clone the project
 
 Go to the project directory
 
-```cmd
+```bash
   cd AI-using-Python
 ```
 
 Install dependencies
 
-```cmd
+```bash
   pip install Pillow
 ```
+- Run the projects as per the Usage
 
-Run the project using
 
-```cmd
-  py maze.py maze.txt
-```
-
+## 🚀 About Me
+I'm a nothing
