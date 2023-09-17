@@ -21,7 +21,7 @@ Clone the project
 Go to the project directory
 
 ```cmd
-  cd AI-using-Python
+  cd 'AI-using-Python/Maze Problem'
 ```
 
 Install dependencies
