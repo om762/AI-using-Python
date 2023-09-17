@@ -226,6 +226,7 @@ class Maze():
                 )
         image_name = input("Enter a name for image : ")
         img.save(image_name + '.png')
+        img.show()
 
 
 
