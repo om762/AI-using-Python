@@ -2,14 +2,14 @@ import sys
 from PIL import Image, ImageDraw
 
 
-class Node():
+class Node:
     def __init__(self, state, parent, action):
         self.state = state
         self.parent = parent
         self.action = action
 
 
-class StackFrontier():
+class StackFrontier:
     def __init__(self):
         self.frontier = []
 
@@ -41,7 +41,7 @@ class QueueFrontier(StackFrontier):
             return node
 
 
-class Maze():
+class Maze:
     def __init__(self, filename):
         with open(filename) as f:
             contents = f.read()
@@ -143,7 +143,6 @@ class Maze():
 
         # keep looping until solution found
         while True:
-
             # if nothing left in frontier then there is no solution
             if frontier.empty():
                 raise Exception("NO SOLUTION")
@@ -172,7 +171,7 @@ class Maze():
             # Mark the node as explored
             self.explored.add(node.state)
 
-            # Add Neighbors to frontier 
+            # Add Neighbors to frontier
             for action, state in self.neighbors(node.state):
                 if not frontier.contain_state(state) and state not in self.explored:
                     child = Node(state=state, parent=node, action=action)
@@ -184,16 +183,13 @@ class Maze():
 
         # Create a blank canvas
         img = Image.new(
-            "RGBA",
-            (self.width * cell_size, self.height * cell_size),
-            "black"
+            "RGBA", (self.width * cell_size, self.height * cell_size), "black"
         )
         draw = ImageDraw.Draw(img)
 
         solution = self.Solution[1] if self.Solution is not None else None
         for i, row in enumerate(self.walls):
             for j, col in enumerate(row):
-
                 # Walls
                 if col:
                     fill = (40, 40, 40)
@@ -220,14 +216,20 @@ class Maze():
 
                 # Draw cell
                 draw.rectangle(
-                    ([(j * cell_size + cell_border, i * cell_size + cell_border),
-                      ((j + 1) * cell_size - cell_border, (i + 1) * cell_size - cell_border)]),
-                    fill=fill
+                    (
+                        [
+                            (j * cell_size + cell_border, i * cell_size + cell_border),
+                            (
+                                (j + 1) * cell_size - cell_border,
+                                (i + 1) * cell_size - cell_border,
+                            ),
+                        ]
+                    ),
+                    fill=fill,
                 )
         image_name = input("Enter a name for image : ")
-        img.save(image_name + '.png')
+        img.save(image_name + ".png")
         img.show()
-
 
 
 if len(sys.argv) != 2:
@@ -242,4 +244,4 @@ print("State Explored : ", m.num_expl)
 print("Solution:")
 m.print()
 explored = int(input("Enter 1 to show explores path else 0 : "))
-m.output_image("maze.png", show_solution=True, show_explored= bool(explored))
+m.output_image("maze.png", show_solution=True, show_explored=bool(explored))
