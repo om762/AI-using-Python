@@ -87,7 +87,7 @@ class Not(Sentence):
         return not self.operand.evaluate(model)
 
     def formula(self):
-        return "¬" + Sentence.parenthesize(self.operand.formula())
+        return "⁓" + Sentence.parenthesize(self.operand.formula())
 
     def symbols(self):
         return self.operand.symbols()
