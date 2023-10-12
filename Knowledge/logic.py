@@ -60,7 +60,7 @@ class Symbol(Sentence):
         try:
             return bool(model[self.name])
         except KeyError:
-            raise EvaluationException(f"variable {self.name} not in model")
+            raise Exception('I dont Know What is happening 💀💀💀💀💀💀💀💀💀')
 
     def formula(self):
         return self.name
