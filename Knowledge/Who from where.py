@@ -1,5 +1,5 @@
 from logic import *
-import termcolor
+import termcolor as tc
 
 class_Mate = ['Vidit', 'Suresh', 'Madhuri']
 places = ['Delhi', 'Varanasi', 'Jabalpur']
@@ -56,6 +56,6 @@ for s in symbols:
     val = model_check(knowledge, s)
     print(s, end= '') #
     if val:
-        termcolor.cprint(" True", "green")
+        tc.cprint(" True", "green")
     else:
-        termcolor.cprint(" False", "red")
+        tc.cprint(" False", "red")
