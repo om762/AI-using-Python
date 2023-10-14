@@ -81,6 +81,25 @@ knowledge3 = And(
         )
     ),
 
+    # B says "A said 'I am a knave'."
+
+    Implication(BKnight, And(
+            Implication(AKnight, AKnight),
+            Implication(AKnave, Not(AKnight))
+        )),
+
+    Implication(BKnave, Not(And(
+            Implication(AKnight, AKnight),
+            Implication(AKnave, Not(AKnight))
+        ))),
+
+    # B says "C is a knave."
+    Implication(BKnight, CKnave),
+    Implication(BKnave, Not(CKnave)),
+
+    # C says "A is a knight."
+    Implication(CKnight, AKnight),
+    Implication(CKnave, Not(AKnight))
 
 )
 
