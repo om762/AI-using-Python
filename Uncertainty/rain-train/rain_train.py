@@ -1,7 +1,5 @@
-from pomegranate import *
-
 import numpy as np
-from pomegranate.distributions import *
+from pomegranate.distributions import Categorical, ConditionalCategorical
 from pomegranate.bayesian_network import BayesianNetwork
 
 rain = Categorical(
