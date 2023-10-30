@@ -1,9 +1,8 @@
-import itertools
 import random
 import copy
 
 
-class Minesweeper():
+class Minesweeper:
     """
     Minesweeper game representation
     """
@@ -85,7 +84,7 @@ class Minesweeper():
         return self.mines_found == self.mines
 
 
-class Sentence():
+class Sentence:
     """
     Logical statement about a Minesweeper game
     A sentence consists of a set of board cells,
@@ -104,14 +103,14 @@ class Sentence():
 
     def known_mines(self):
         """
-        Returns the set of all cells in self.cells known to be mines.
+        Returns the set of all cells in self. cells known to be mines.
         """
         if self.count == len(self.cells):
             return self.cells
 
     def known_safes(self):
         """
-        Returns the set of all cells in self.cells known to be safe.
+        Returns the set of all cells in self. cells known to be safe.
         """
         if self.count == 0:
             return self.cells
@@ -138,7 +137,7 @@ class Sentence():
             pass
 
 
-class MinesweeperAI():
+class MinesweeperAI:
     """
     Minesweeper game player
     """
@@ -294,7 +293,7 @@ class MinesweeperAI():
         The move must be known to be safe, and not already a move
         that has been made.
 
-        This function may use the knowledge in self.mines, self.safes
+        This function may use the knowledge in self.  mines, self. safes
         and self.moves_made, but should not modify any of those values.
         """
         for i in self.safes - self.moves_made:
@@ -310,15 +309,13 @@ class MinesweeperAI():
             2) are not known to be mines
         """
 
-        maxmoves = self.width * self.height
+        max_of_moves = self.width * self.height
 
-        while maxmoves > 0:
-            maxmoves -= 1
+        while max_of_moves > 0:
+            max_of_moves -= 1
 
             row = random.randrange(self.height)
             column = random.randrange(self.width)
 
             if (row, column) not in self.moves_made | self.mines:
-                return (row, column)
-
-        return None
+                return row, column
