@@ -8,7 +8,7 @@ X = torch.tensor(
             -1,
             -1,
             -1,
-            1 # Any How final Decision is going
+            1  # Anyhow final Decision is going
         ]
     ]
 )
@@ -23,14 +23,14 @@ states = (
     ('final_decision', ['going', 'stay'])
 )
 
-# Calculate probabitlity of final decision is going
+# Calculate probability of final decision is going
 predictions = Going_Home.predict_proba(X_masked)
 
 # Print prediction for each node
 
 for (node_name, values), prediction in zip(states, predictions):
     if isinstance(prediction, str):
-        print(f"{node_name} : {prediction}")
+        print(f"{node_name}: {prediction}")
     else:
         print(f"{node_name}")
         for value, probability in zip(values, prediction[0]):

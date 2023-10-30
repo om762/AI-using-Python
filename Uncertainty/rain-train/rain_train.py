@@ -1,4 +1,3 @@
-import numpy as np
 from pomegranate.distributions import Categorical, ConditionalCategorical
 from pomegranate.bayesian_network import BayesianNetwork
 
