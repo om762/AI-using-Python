@@ -84,7 +84,7 @@ class Minesweeper:
         return self.mines_found == self.mines
 
 
-class Sentence:
+class Sentence():
     """
     Logical statement about a Minesweeper game
     A sentence consists of a set of board cells,
@@ -103,14 +103,14 @@ class Sentence:
 
     def known_mines(self):
         """
-        Returns the set of all cells in self. cells known to be mines.
+        Returns the set of all cells in self.cells known to be mines.
         """
-        if self.count == len(self.cells):
+        if len(self.cells) == self.count:
             return self.cells
 
     def known_safes(self):
         """
-        Returns the set of all cells in self. cells known to be safe.
+        Returns the set of all cells in self.cells known to be safe.
         """
         if self.count == 0:
             return self.cells
@@ -121,8 +121,8 @@ class Sentence:
         a cell is known to be a mine.
         """
         if cell in self.cells:
-            self.cells.remove(cell)
             self.count -= 1
+            self.cells.remove(cell)
         else:
             pass
 
@@ -191,6 +191,7 @@ class MinesweeperAI:
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
+        
         # 1) mark the cell as a move that has been made
         self.moves_made.add(cell)
 
@@ -198,95 +199,76 @@ class MinesweeperAI:
         self.mark_safe(cell)
 
         # 3) add a new sentence to the AI's knowledge base based on the value of `cell` and `count`
-        cells = set()
-        count_cpy = copy.deepcopy(count)
-        close_cells = self.return_close_cells(cell)     # returns neighbour cells
-        for cl in close_cells:
-            if cl in self.mines:
-                count_cpy -= 1
-            if cl not in self.mines | self.safes:
-                cells.add(cl)                           # only add cells that are of unknown state
+        near_cell = set()
+        passing_cell = set()
+        passing_count = count
         
-        new_sentence = Sentence(cells, count_cpy)
-
-        if len(new_sentence.cells) > 0:                 # add that sentence to knowledge only if it is not empty
-            self.knowledge.append(new_sentence)
+        for i in range(cell[0]-1, cell[0]+2):
+            for j in range(cell[1]-1, cell[1]+2):
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    near_cell.add((i, j))
+        for nc in near_cell:
+            if nc in self.mines:
+                passing_count -= 1
+            if nc not in self.mines | self.safes:
+                passing_cell.add(nc)
         
-        self.check_knowledge()
-        self.extra_inference()
+        if len(passing_cell) != 0:
+            new_sent = Sentence(passing_cell, passing_count)
+            self.knowledge.append(new_sent)
+            
+        
+        # 4) mark any additional cells as safe or as mines
+        #     if it can be concluded based on the AI's knowledge base
+        
+        self.review_knowledge()
 
-    def return_close_cells(self, cell):
-        """
-        returns cell that are 1 cell away from cell passed in arg
-        """
-        # returns cells close to arg cell by 1 cell
-        close_cells = set()
-        for rows in range(self.height):
-            for columns in range(self.width):
-                if abs(cell[0] - rows) <= 1 and abs(cell[1] - columns) <= 1 and (rows, columns) != cell:
-                    close_cells.add((rows, columns))
-        return close_cells
-    
-    def check_knowledge(self):
-        """
-        check knowledge for new safes and mines, updates knowledge if possible
-        """
-        # copies the knowledge to operate on copy
-        knowledge_copy = copy.deepcopy(self.knowledge)
-        # iterates through sentences
+        # 5) add any new sentences to the AI's knowledge base
+        #     if they can be inferred from existing knowledge
+        
+        '''
+        Used for inferencing new knowleadge from prvious knowleadge and 
+        update the knowlege acording to it
+        '''
+        for sent1 in self.knowledge:
+            for sent2 in self.knowledge:
+                if sent1.cells.issubset(sent2.cells):
+                    infer_cells = sent1.cells - sent2.cells
+                    infer_count = sent1.count - sent2.count
+                    
+                    infer_sent = Sentence(infer_cells, infer_count)
+                    
+                    infer_mines = infer_sent.known_mines()
+                    infer_safes = infer_sent.known_safes()
+                    if infer_mines:
+                        for m1 in infer_mines:
+                            self.mark_mine(m1)
+                    if infer_safes:
+                        for s2 in infer_safes:
+                            self.mark_safe(s2)
 
-        for sentence in knowledge_copy:
-            if len(sentence.cells) == 0:
+    def review_knowledge(self):
+        know_copy = copy.deepcopy(self.knowledge)
+        for sent in know_copy:
+            if len(sent.cells) == 0:
                 try:
-                    self.knowledge.remove(sentence)
+                    self.knowledge.remove(sent)
                 except ValueError:
                     pass
-            # check for possible mines and safes
-            mines = sentence.known_mines()
-            safes = sentence.known_safes()
-
-            # update knowledge if mine or safe was found
-            if mines:
-                for mine in mines:
-                    # print(f"Marking {mine} as mine")
+            mines_of_sent = sent.known_mines()
+            safes_of_sent = sent.known_safes()
+            
+            if mines_of_sent:
+                for mine in mines_of_sent:
                     self.mark_mine(mine)
-                    self.check_knowledge()
-            if safes:
-                for safe in safes:
-                    # print(f"Marking {safe} as safe")
-                    self.mark_safe(safe)
-                    self.check_knowledge()
-
-    def extra_inference(self):
-        """
-        update knowledge based on inference
-        """
-        # iterate through pairs of sentences
-        for sentence1 in self.knowledge:
-            for sentence2 in self.knowledge:
-                # check if sentence 1 is subset of sentence 2
-                if sentence1.cells.issubset(sentence2.cells):
-                    new_cells = sentence2.cells - sentence1.cells
-                    new_count = sentence2.count - sentence1.count
-                    new_sentence = Sentence(new_cells, new_count)
-                    mines = new_sentence.known_mines()
-                    safes = new_sentence.known_safes()
-                    if mines:
-                        for mine in mines:
-                            # print(f"Used inference to mark mine: {mine}")
-                            # print(f"FinalSen: {new_sentence}")
-                            # print(f"Sent1: {sent1copy}")
-                            # print(f"Sent2: {sent2copy}")
-                            self.mark_mine(mine)
-
-                    if safes:
-                        for safe in safes:
-                            # print(f"Used inference to mark safe: {safe}")
-                            # print(f"FinalSen: {new_sentence}")
-                            # print(f"Sent1: {sent1copy}")
-                            # print(f"Sent2: {sent2copy}")
-                            self.mark_safe(safe)
-
+                    self.review_knowledge()
+            if safes_of_sent:
+                for safes in safes_of_sent:
+                    self.mark_safe(safes)
+                    self.review_knowledge()
+            
+                    
+    
     def make_safe_move(self):
         """
         Returns a safe cell to choose on the Minesweeper board.
@@ -301,6 +283,20 @@ class MinesweeperAI:
         
         return None
 
+    def make_safe_move(self):
+        """
+        Returns a safe cell to choose on the Minesweeper board.
+        The move must be known to be safe, and not already a move
+        that has been made.
+
+        This function may use the knowledge in self.mines, self.safes
+        and self.moves_made, but should not modify any of those values.
+        """
+        for i in self.safes - self.moves_made:
+            return i
+        
+        return None
+
     def make_random_move(self):
         """
         Returns a move to make on the Minesweeper board.
@@ -308,7 +304,6 @@ class MinesweeperAI:
             1) have not already been chosen, and
             2) are not known to be mines
         """
-
         max_of_moves = self.width * self.height
 
         while max_of_moves > 0:
@@ -319,3 +314,4 @@ class MinesweeperAI:
 
             if (row, column) not in self.moves_made | self.mines:
                 return row, column
+
