@@ -18,7 +18,7 @@ for change in price_changes:
 # movement_sequence = movement_sequence.replace(']', '')
 # movement_sequence = movement_sequence.replace(', ', ',\n')
 # count = movement_sequence.count('bullish') + movement_sequence.count('bearish')
-print(movement_sequence)
+# print(movement_sequence)
 # # print(count)
 
 X = array(
@@ -32,4 +32,5 @@ X = array(
 # print(X)
 y_hat = model.predict(X)
 
-print(y_hat)
+print("sequence: {}".format(' '.join(movement_sequence)))
+print("hmm pred: {}".format(''.join([str(y.item()) for y in y_hat[0]])))
