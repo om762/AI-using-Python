@@ -1,29 +1,15 @@
 from Umbrella import model
 import numpy as np
 
-# Observation Data
-observation = [
-    "umbrella",
-    "umbrella",
-    "no umbrella",
-    "umbrella",
-    "umbrella",
-    "umbrella",
-    "umbrella",
-    "no umbrella",
-    "no umbrella"
-]
-
+sequence = 'UUNUUUUNNUNUNUNUNUNNNNNNNNUUUUUUUNUNUNUNUNUNUNUNUNUNUN' 
 X = np.array(
     [
         [
-            [["umbrella", "no umbrella"].index(char)] for char in observation
+            [['U', 'N'].index(char)] for char in sequence
         ]
-    ]
-)
+    ])
 
-print(X)
 y_hat = model.predict(X)
 
-print("sequence: {}".format(''.join(observation)))
+print("sequence: {}".format(''.join(sequence)))
 print("hmm pred: {}".format(''.join([str(y.item()) for y in y_hat[0]])))

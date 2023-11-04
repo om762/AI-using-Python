@@ -1,6 +1,6 @@
 from pomegranate.hmm import *
 from pomegranate.distributions import *
-import numpy as np
+import numpy
 
 # Observation model for each state
 sun = Categorical(
@@ -30,7 +30,7 @@ model.add_edge(model.start, rain, 0.5)
 model.add_edge(model.start, sun, 0.5)
 
 # Transitional Model
-model.add_edge(sun, sun, 0.8)  # If today is sunny day then probability of tommorow will be sunny
-model.add_edge(sun, rain, 0.2) # If today is sunny day then probability of tommorow will be not sunny i.e. Rainny
+model.add_edge(sun, sun, 0.9)  # If today is sunny day then probability of tommorow will be sunny
+model.add_edge(sun, rain, 0.1) # If today is sunny day then probability of tommorow will be not sunny i.e. Rainny
 model.add_edge(rain, rain, 0.3) # If today is raining then probability of tommorow will be raining too
 model.add_edge(rain, sun, 0.7) # If today is raining then probability of tommorow will be not raining

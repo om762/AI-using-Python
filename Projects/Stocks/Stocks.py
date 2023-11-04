@@ -32,7 +32,7 @@ model.add_distributions(states)
 model.add_edge(model.start, market_up, 0.6)
 model.add_edge(model.start, market_down, 0.4)
 
-# Tran
-
-
-
+model.add_edge(market_up, market_up, 0.72)  # If today's market is up then probability of tommorow market will up
+model.add_edge(market_up, market_down, 0.28) # If today's market is up then probability of tommorow will be go down
+model.add_edge(market_down, market_down, 0.6) # If today is market is down then probability of tommorow will be market go down too
+model.add_edge(market_down, market_up, 0.4) # If today is market is down then probability of tommorow will not go down i.e. it will go up
