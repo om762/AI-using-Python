@@ -129,9 +129,9 @@ class Maze:
         # initialize the front to the start position
         start = Node(state=self.start, parent=None, action=None)
         choice = int(input("Enter 0 for BFS and 1 for DFS : "))
-        if choice == 1:
+        if choice == 0:
             frontier = QueueFrontier()
-        elif choice == 0:
+        elif choice == 1:
             frontier = StackFrontier()
         else:
             print("You Entered the wrong choice so we go we DFS ")
