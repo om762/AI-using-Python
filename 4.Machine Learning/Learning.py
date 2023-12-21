@@ -57,3 +57,6 @@ print(f"Results for model {type(model).__name__}")
 print(f"Correct: {correct}")
 print(f"Incorrect: {incorrect}")
 print(f"Accuracy: {100 * correct / total:.2f}%")
+
+
+# Tarun
