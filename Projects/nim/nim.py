@@ -101,7 +101,11 @@ class NimAI():
         Return the Q-value for the state `state` and the action `action`.
         If no Q-value exists yet in `self.q`, return 0.
         """
-        raise NotImplementedError
+        # print(state,action)
+        if((tuple(state),action) in self.q.keys()):
+            return self.q[(tuple(state),action)]
+        return 0
+
 
     def update_q_value(self, state, action, old_q, reward, future_rewards):
         """
@@ -118,7 +122,8 @@ class NimAI():
         `alpha` is the learning rate, and `new value estimate`
         is the sum of the current reward and estimated future rewards.
         """
-        raise NotImplementedError
+        state = tuple(state)
+        self.q[(state,action)] = old_q + self.alpha * ((reward + future_rewards) - old_q)
 
     def best_future_reward(self, state):
         """
@@ -130,7 +135,13 @@ class NimAI():
         Q-value in `self.q`. If there are no available actions in
         `state`, return 0.
         """
-        raise NotImplementedError
+        state = tuple(state)
+        max = 0
+        for action in Nim.available_actions(state):
+            if (state,action) in self.q.keys():
+                if self.q[(state,action)] > 0:
+                    max = self.q[(state,action)]
+        return max
 
     def choose_action(self, state, epsilon=True):
         """
@@ -147,7 +158,25 @@ class NimAI():
         If multiple actions have the same Q-value, any of those
         options is an acceptable return value.
         """
-        raise NotImplementedError
+        state = tuple(state)
+        actions = Nim.available_actions(state)
+        if(epsilon == True):
+            if(random.randrange(10) > self.epsilon * 10):
+                return list(actions)[random.randrange(len(actions))]
+
+        best = None
+        for action in actions:
+            if best == None:
+                # print(state, action)
+                if (state,action) in self.q.keys():
+                    best = action
+            if (state,action) in self.q.keys():
+                if self.q[(state,action)] > self.q[(state,best)]:
+                    best = action
+        if best == None:
+            best = list(actions)[0]
+        return best
+        
 
 
 def train(n):
