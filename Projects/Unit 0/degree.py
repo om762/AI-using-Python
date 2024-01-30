@@ -3,19 +3,19 @@ import sys
 
 from util import Node, StackFrontier, QueueFrontier
 
-# Maps names to a set of corresponding person_id
+# Maps names to a set of corresponding person_ids
 names = {}
 
-# Maps person_id to a dictionary of name, birth, movies (A set movie_ids)
+# Maps person_ids to a dictionary of: name, birth, movies (a set of movie_ids)
 people = {}
 
-# Maps movie-ids to a dictionary of title, year stars (A set of person_ids)
+# Maps movie_ids to a dictionary of: title, year, stars (a set of person_ids)
 movies = {}
 
 
 def load_data(directory):
     """
-    Load data from CSV file into memory
+    Load data from CSV files into memory.
     """
     
     # Load people
@@ -25,12 +25,12 @@ def load_data(directory):
             people[row["id"]] = {
                 "name": row["name"],
                 "birth": row["birth"],
-                "movies":set()
+                "movies": set()
             }
-        if row["name"].lower() not in names:
-            names[row["name"].lower()] = {row["id"]}
-        else:
-            names[row[names].lower()].add(row["id"])
+            if row["name"].lower() not in names:
+                names[row["name"].lower()] = {row["id"]}
+            else:
+                names[row["name"].lower()].add(row["id"])
     
     # Load movies
     with open(f"{directory}/movies.csv", encoding="utf-8") as f:
@@ -54,6 +54,37 @@ def load_data(directory):
                 pass
 
 
+def main():
+    if len(sys.argv) > 2:
+        sys.exit("Usage: python degrees.py [directory]")
+    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
+
+    # Load data from files into memory
+    print("Loading data...")
+    load_data(directory)
+    print("Data loaded.")
+    
+    source = person_id_for_name(input("Source Name: "))
+    if source is None:
+        sys.exit("Person not found.")
+    target = person_id_for_name(input("Target Name: "))
+    if target is None:
+        sys.exit("Person not found")
+    
+    path = shortest_path(source, target)
+    
+    if path is None:
+        print("Not Connected.")
+    else:
+        degrees = len(path)
+        print(f"{degrees} degrees of separation.")
+        path = [(None, source)] + path
+        print(path)
+        for i in range(degrees):
+            person1 = people[path[i][1]]["name"]
+            person2 = people[path[i + 1][1]]["name"]
+            movie = movies[path[i + 1][0]]["title"]
+            print(f"{i + 1}: {person1} and {person2} starred in {movie}")
 
 
 def person_id_for_name(name):
@@ -88,8 +119,21 @@ def neighbors_for_person(person_id):
     Returns (movie_id, person_id) pairs for people
     who starred with a given person.
     """
-    # TODO
-    raise NotImplementedError
+    person_movies = list(people[person_id]["movies"])
+    result = set()
+    for movie_id in person_movies:
+        star_ids = list(movies[movie_id]["stars"])
+        for star_id in star_ids:
+            result.add((movie_id, star_id))
+    return result
+
+def makeSolution(node):
+    solution = []
+    while node.parent is not None:
+        solution.append((node.action, node.state))
+        node = node.parent
+    solution.reverse()
+    return solution
 
 
 def shortest_path(source, target):
@@ -100,40 +144,29 @@ def shortest_path(source, target):
     If no possible path, returns None.
     """
 
-    # TODO
-    raise NotImplementedError
+    exploredSet = set()
+    frontier = QueueFrontier()
+    node = Node(source, None, None)
+    frontier.add(node)
+    
+    while True:
+        if frontier.is_empty() is True:
+            return []
+        node = frontier.remove()
+        
+        if node.state == target:
+            Solution = makeSolution(node)
+            return Solution
+        
+        exploredSet.add(node.state)
+        
+        for movie, stars in neighbors_for_person(node.state):
+            if frontier.is_contain(stars) is False and stars not in exploredSet:
+                newNode = Node(stars, node, movie)
+                frontier.add(newNode)
 
 
-def main():
-    if len(sys.argv) > 2:
-        sys.exit("Usage: python degrees.py [directory]")
-    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
-    
-    # Laod data from the files into memory
-    print("Loading data...")
-    load_data(directory)
-    print("Data loaded.")
-    
-    source = person_id_for_name(input("Source Name: "))
-    if source is None:
-        sys.exit("Person not found")
-    target = person_id_for_name(input("Target Name: "))
-    if target is None:
-        sys.exit("Person not found")
-    
-    path = shortest_path(source, target)
-    
-    if path is None:
-        print("Not Connected.")
-    else:
-        degree = len(path)
-        print(f"{degree} degree of separation.")
-        print([(None, source)] + path)
-        for i in range(degree):
-            person1 = people[path[i][1]["name"]]
-            person2 = people[path[i + 1]][1]["name"]
-            movie = movie[path[i+1][0]["title"]]
-            print(f"{i + 1}: {person1} and {person2} starred in {movie}")
+
 
 
 if __name__ =="__main__":
