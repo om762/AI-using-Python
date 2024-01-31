@@ -1,5 +1,6 @@
 import csv
 import sys
+import time
 
 from util import Node, StackFrontier, QueueFrontier
 
@@ -31,6 +32,7 @@ def load_data(directory):
                 names[row["name"].lower()] = {row["id"]}
             else:
                 names[row["name"].lower()].add(row["id"])
+        print("Total People: ", len(people))
     
     # Load movies
     with open(f"{directory}/movies.csv", encoding="utf-8") as f:
@@ -41,6 +43,7 @@ def load_data(directory):
                 "year": row["year"],
                 "stars": set()
             }
+        print("Total Movies: ", len(movies))
     
     # Load stars
     with open(f"{directory}/stars.csv", encoding="utf-8") as f:
@@ -63,28 +66,40 @@ def main():
     print("Loading data...")
     load_data(directory)
     print("Data loaded.")
+    repeat =  True
+    while repeat:
+        source = None
+        target = None
+        repeat = True
+        while source is None and target is None:
+            source = person_id_for_name(input("Source Name: "))
+            if source is None:
+                print("Person not found.")
+                continue
+            target = person_id_for_name(input("Target Name: "))
+            if target is None:
+                print("Person not found")
+                print("try again")
+        
+        print("Searching...")
+        path = shortest_path(source, target)
+        
+        if path is None:
+            print("Not Connected.")
+        else:
+            degrees = len(path)
+            print(f"{degrees} degrees of separation.")
+            path = [(None, source)] + path
+            print(path)
+            for i in range(degrees):
+                person1 = people[path[i][1]]["name"]
+                person2 = people[path[i + 1][1]]["name"]
+                movie = movies[path[i + 1][0]]["title"]
+                print(f"{i + 1}: {person1} and {person2} starred in {movie}")
     
-    source = person_id_for_name(input("Source Name: "))
-    if source is None:
-        sys.exit("Person not found.")
-    target = person_id_for_name(input("Target Name: "))
-    if target is None:
-        sys.exit("Person not found")
-    
-    path = shortest_path(source, target)
-    
-    if path is None:
-        print("Not Connected.")
-    else:
-        degrees = len(path)
-        print(f"{degrees} degrees of separation.")
-        path = [(None, source)] + path
-        print(path)
-        for i in range(degrees):
-            person1 = people[path[i][1]]["name"]
-            person2 = people[path[i + 1][1]]["name"]
-            movie = movies[path[i + 1][0]]["title"]
-            print(f"{i + 1}: {person1} and {person2} starred in {movie}")
+        c = int(input("Enter 1 if you want try more with stars: "))
+        if c != 1:
+            repeat = False
 
 
 def person_id_for_name(name):
@@ -145,16 +160,27 @@ def shortest_path(source, target):
     """
 
     exploredSet = set()
+    cost = 0
     frontier = QueueFrontier()
     node = Node(source, None, None)
     frontier.add(node)
     
+    start_time = time.time()
+    print("Progress: ", end=" ")
     while True:
         if frontier.is_empty() is True:
             return []
         node = frontier.remove()
+        cost = cost + 1
+        total = len(people)
+        
+        if time.time() - start_time >= 1:
+            sys.stdout.write("\rProgress: {}/{}".format(cost, total))
+            start_time = time.time()
+        sys.stdout.flush()
         
         if node.state == target:
+            print("\n Searchign completed")
             Solution = makeSolution(node)
             return Solution
         
