@@ -63,6 +63,7 @@ def main():
     directory = sys.argv[1] if len(sys.argv) == 2 else "large"
 
     # Load data from files into memory
+    print()
     print("Loading data...")
     load_data(directory)
     print("Data loaded.")
@@ -72,33 +73,32 @@ def main():
         target = None
         repeat = True
         while source is None and target is None:
-            source = person_id_for_name(input("Source Name: "))
+            source = person_id_for_name(input("\nSource Name: "))
             if source is None:
                 print("Person not found.")
                 continue
-            target = person_id_for_name(input("Target Name: "))
+            target = person_id_for_name(input("\nTarget Name: "))
             if target is None:
                 print("Person not found")
                 print("try again")
         
-        print("Searching...")
+        print("\n\tSearching...")
         path = shortest_path(source, target)
         
         if path is None:
-            print("Not Connected.")
+            print("!!!Not Connected!!!")
         else:
             degrees = len(path)
-            print(f"{degrees} degrees of separation.")
+            print(f"\n{degrees} degrees of separation.\n")
             path = [(None, source)] + path
-            print(path)
             for i in range(degrees):
                 person1 = people[path[i][1]]["name"]
                 person2 = people[path[i + 1][1]]["name"]
                 movie = movies[path[i + 1][0]]["title"]
-                print(f"{i + 1}: {person1} and {person2} starred in {movie}")
+                print(f"\t{i + 1}: {person1} and {person2} starred in {movie}")
     
-        c = int(input("Enter 1 if you want try more with stars: "))
-        if c != 1:
+        c = input("Enter 1 if you want try more with stars: ")
+        if c != '1':
             repeat = False
 
 
@@ -112,14 +112,14 @@ def person_id_for_name(name):
     if len(person_ids) == 0:
         return None
     elif len(person_ids) > 1:
-        print(f"Which '{name}'?")
+        print(f"\tWhich '{name}'?")
         for person_id in person_ids:
             person = people[person_id]
             name = person["name"]
             birth = person["birth"]
-            print(f"ID: {person_id}, Name: {name}, Birth: {birth}")
+            print(f"\tID: {person_id}, Name: {name}, Birth: {birth}")
         try:
-            person_id = input("Intended Person ID: ")
+            person_id = input("\tIntended Person ID: ")
             if person_id in person_ids:
                 return person_id
         except ValueError:
