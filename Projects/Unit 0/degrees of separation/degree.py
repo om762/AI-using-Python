@@ -1,6 +1,7 @@
 import csv
 import sys
 import time
+import termcolor as tc
 
 from util import Node, StackFrontier, QueueFrontier
 
@@ -64,29 +65,30 @@ def main():
 
     # Load data from files into memory
     print()
-    print("Loading data...")
+    tc.cprint("Loading data...", "blue")
     load_data(directory)
-    print("Data loaded.")
+    tc.cprint("Data Loaded", "green")
     repeat =  True
     while repeat:
         source = None
         target = None
-        repeat = True
-        while source is None and target is None:
+        while source is None:
             source = person_id_for_name(input("\nSource Name: "))
             if source is None:
                 print("Person not found.")
-                continue
+                print("try again")
+        while target is None:
             target = person_id_for_name(input("\nTarget Name: "))
             if target is None:
                 print("Person not found")
                 print("try again")
+
         
-        print("\n\tSearching...")
+        print("\nSearching...")
         path = shortest_path(source, target)
         
-        if path is None:
-            print("!!!Not Connected!!!")
+        if len(path) == 0:
+            tc.cprint("!!!Not Connected!!!", "red")
         else:
             degrees = len(path)
             print(f"\n{degrees} degrees of separation.\n")
@@ -95,7 +97,13 @@ def main():
                 person1 = people[path[i][1]]["name"]
                 person2 = people[path[i + 1][1]]["name"]
                 movie = movies[path[i + 1][0]]["title"]
-                print(f"\t{i + 1}: {person1} and {person2} starred in {movie}")
+                year = movies[path[i + 1][0]]["year"]
+                other_actor = set()
+                for idss in list(movies[path[i + 1][0]]["stars"]):
+                    other_actor.add(people[idss]["name"])
+                
+                other_actor = other_actor - set([person1, person2])
+                print(f"\t{i + 1}: {person1} and {person2} starred in {movie} in {year} with {other_actor}")
     
         c = input("Enter 1 if you want try more with stars: ")
         if c != '1':
@@ -180,7 +188,7 @@ def shortest_path(source, target):
         sys.stdout.flush()
         
         if node.state == target:
-            print("\n Searchign completed")
+            tc.cprint("\n Searchign completed", "yellow")
             Solution = makeSolution(node)
             return Solution
         
