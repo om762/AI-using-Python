@@ -1,6 +1,5 @@
 import sys
 import tensorflow as tf
-import numpy as np
 
 from PIL import Image, ImageDraw, ImageFont
 from transformers import AutoTokenizer, TFBertForMaskedLM
@@ -46,11 +45,14 @@ def get_mask_token_index(mask_token_id, inputs):
     Return the index of the token with the specified `mask_token_id`, or
     `None` if not present in the `inputs`.
     """
-    input_ids = inputs['input_ids'].numpy()[0]
-    for i, token_id in enumerate(input_ids):
-        if token_id == mask_token_id:
+    i = 0
+    #print(inputs["input_ids"].numpy())
+    for id in inputs["input_ids"].numpy()[0]:
+        if mask_token_id == id:
             return i
+        i += 1
     return None
+
 
 
 def get_color_for_attention_score(attention_score):
@@ -58,16 +60,12 @@ def get_color_for_attention_score(attention_score):
     Return a tuple of three integers representing a shade of gray for the
     given `attention_score`. Each value should be in the range [0, 255].
     """
+    # TODO: Implement this function
+    #print(attention_score.numpy())
+    color_n = round(255 * attention_score.numpy())
 
-    if np.isscalar(attention_score):
-        # If attention_score is a scalar, convert it to an integer
-        gray_value = int(attention_score * 255)
-        return (gray_value, gray_value, gray_value)
-    else:
-        # If attention_score is an array, use the mean value for color
-        mean_score = np.mean(attention_score)
-        gray_value = int(mean_score * 255)
-        return (gray_value, gray_value, gray_value)
+    return (color_n, color_n, color_n)
+
 
 
 def visualize_attentions(tokens, attentions):
@@ -80,23 +78,17 @@ def visualize_attentions(tokens, attentions):
     include both the layer number (starting count from 1) and head number
     (starting count from 1).
     """
-
-    """ # TODO: Update this function to produce diagrams for all layers and heads.
-    generate_diagram(
-        1,
-        1,
-        tokens,
-        attentions[0][0][0]
-    ) """
-
-    for i, layer_attentions in enumerate(attentions):
-        for j, head_attentions in enumerate(layer_attentions):
-            generate_diagram(
-                i + 1,
-                j + 1,
-                tokens,
-                head_attentions
-            )
+    # TODO: Update this function to produce diagrams for all layers and heads.
+    #print(attentions)
+    count = 1
+    for i in range(len(attentions)):
+            for k in range(len(attentions[i][0])):
+                generate_diagram(
+                    i+1,
+                    k+1,
+                    tokens,
+                    attentions[i][0][k]
+                )
 
 
 def generate_diagram(layer_number, head_number, tokens, attention_weights):
@@ -142,13 +134,7 @@ def generate_diagram(layer_number, head_number, tokens, attention_weights):
         y = PIXELS_PER_WORD + i * GRID_SIZE
         for j in range(len(tokens)):
             x = PIXELS_PER_WORD + j * GRID_SIZE
-            # color = get_color_for_attention_score(attention_weights[i][j])
-            # Handle error - INVALID_ARGUMENT: slice index 12 of dimension 0 out of bounds.
-            if 0 <= i < attention_weights.shape[0] and 0 <= j < attention_weights.shape[1]:
-                color = get_color_for_attention_score(attention_weights[i][j])
-            else:
-                # Handle out-of-bounds case, e.g., set a default color
-                color = (0, 0, 0)  # Black as a default color
+            color = get_color_for_attention_score(attention_weights[i][j])
             draw.rectangle((x, y, x + GRID_SIZE, y + GRID_SIZE), fill=color)
 
     # Save image
