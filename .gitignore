@@ -1,6 +1,6 @@
 __pycache__
-.idea
-.vscode
-.exe
+*.idea
+*.vscode
+*.exe
 **/test/
 revision/
