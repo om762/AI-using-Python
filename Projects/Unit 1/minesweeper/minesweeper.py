@@ -268,20 +268,6 @@ class MinesweeperAI:
                     self.review_knowledge()
             
                     
-    
-    def make_safe_move(self):
-        """
-        Returns a safe cell to choose on the Minesweeper board.
-        The move must be known to be safe, and not already a move
-        that has been made.
-
-        This function may use the knowledge in self.  mines, self. safes
-        and self.moves_made, but should not modify any of those values.
-        """
-        for i in self.safes - self.moves_made:
-            return i
-        
-        return None
 
     def make_safe_move(self):
         """
